@@ -1,0 +1,32 @@
+import mysql.connector
+from mysql.connector import Error
+
+class Datos(object):
+    def _init_(self,connection,cursor):
+        self.connection = connection
+        self.cursor = cursor
+        
+    def connect(self):
+        print("Conectando con la base de datos...")
+        try:
+            self.connection = mysql.connector.connect(host='192.168.3.15', database='myarcadesystem', user='every', password='every')
+            self.cursor = self.connection.cursor(prepared=True)
+        except Error as e:
+            print(e)
+    def insertsesion(self,sesiones):
+        print("Insertando sesiones...")
+        for sesion in sesiones:
+            query = """INSERT INTO sesion (id_s, id_u, id_j, fechaInicio, tiempo, score)
+                        VALUES (%s,%s,%s,%s,%s,%s)"""
+            self.cursor.execute(query,sesion)
+
+    def takeid(self,valor):
+        print("Extrayendo id del usuario...")
+        query = """SELECT id FROM usuario WHERE id_nfc = %s"""
+        self.cursor.execute(query,[float(valor)])
+        return self.cursor.fetchall()[0][0]
+        
+    def close(self):
+        self.connection.commit()
+        self.cursor.close()
+        self.connection.close()
