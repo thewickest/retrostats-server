@@ -1,4 +1,3 @@
-import filecmp
 from pathlib import Path
 
 rutaScoresMame2003 = "mame2003/hi/"

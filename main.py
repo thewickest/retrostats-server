@@ -1,8 +1,6 @@
 from readtimes import Times
-from nfc import NFC
 from dbfuncs import Datos
 from writesesion import Sesion
-from readscores import ScoreReader
 from mysql.connector import Error
 def main():
 

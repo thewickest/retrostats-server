@@ -17,6 +17,7 @@ class Datos(object):
         except Error as e:
             print(e)
     def insertsesion(self,sesiones):
+        # TODO: another fetch to the api
         print("Insertando sesiones...")
         for sesion in sesiones:
             query = """INSERT INTO sesion (id_s, id_u, id_j, fechaInicio, tiempo, score)
@@ -24,6 +25,7 @@ class Datos(object):
             self.cursor.execute(query,sesion)
 
     def takeid(self,valor):
+        # TODO: this should be changed by a fetch to the api
         print("Extrayendo id del usuario...")
         query = """SELECT id FROM usuario WHERE id_nfc = %s"""
         self.cursor.execute(query,[float(valor)])

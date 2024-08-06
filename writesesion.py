@@ -1,4 +1,3 @@
-import xml.etree.ElementTree as et
 from datetime import datetime
 from nfc import NFC as nfc
 from dbfuncs import Datos as datos

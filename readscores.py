@@ -1,4 +1,3 @@
-import codecs
 import filecmp 
 from shutil import copyfile
 from switcher import Switcher
