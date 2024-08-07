@@ -1,5 +1,5 @@
 from datetime import date
-from readtimes import openLogFile, writeLogFile, getSessionDate, getSessionTime
+from readTimess import openLogFile, writeLogFile, getSessionDate, getSessionTime
 # from dbfuncs import Datos
 # from writesesion import Sesion
 # from mysql.connector import Error

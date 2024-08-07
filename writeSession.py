@@ -1,7 +1,7 @@
 from datetime import datetime
 from nfc import NFC as nfc
-from dbfuncs import Datos as datos
-from readscores import ScoreReader as scoreReader
+from dbFuncs import Datos as datos
+from readScoress import ScoreReader as scoreReader
 from pathlib import Path
 
 #leo cada linea para coger el emulador y la ruta de la rom
