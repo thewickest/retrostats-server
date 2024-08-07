@@ -8,8 +8,7 @@ from readTimes import openLogFile, writeLogFile, getSessionDate, getSessionTime
 
 logPath: str = 'logs/game_stats.log'
 
-def main():
-
+if __name__ == "__main__":
     # horas = Times()
     rows: list[str] = openLogFile(logPath)
     print("Procesando las horas...")
@@ -41,6 +40,3 @@ def main():
     #     except Error as e:
     #         print(e)
     #         print("Ha habido un error al conectar con la base de datos")
-
-if __name__ == "__main__":
-    main()
