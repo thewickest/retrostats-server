@@ -1,5 +1,7 @@
 from datetime import date
-from readTimes import openLogFile, writeLogFile, getSessionDate, getSessionTime
+from readTimes import getSessionDate, getSessionTime
+from writeSession import getSessions
+from files import openLogFile, writeLogFile
 # from dbfuncs import Datos
 # from writesesion import Sesion
 # from mysql.connector import Error
@@ -9,19 +11,23 @@ from readTimes import openLogFile, writeLogFile, getSessionDate, getSessionTime
 logPath: str = 'logs/game_stats.log'
 
 if __name__ == "__main__":
-    # horas = Times()
+
+    # Process logs file
     rows: list[str] = openLogFile(logPath)
     print("Procesando las horas...")
     sessionDates: list[str] = getSessionDate(rows)
     print("Sumando las horas de las sesiones....")
     sessionTime: str = getSessionTime(sessionDates)
-    writeLogFile(logPath, sessionDates, sessionTime)
+    if(len(sessionDates)):
+        writeLogFile(logPath, sessionDates, sessionTime)
 
-    #obtener sesion
-    # sesion = Sesion()
-    # lines = sesion.openlog()
-    # print("Procesando las sesiones...")
+    # Get sessions from the log file
+    rows: list[str] = openLogFile(logPath)
+    print("Procesando las sesiones...")
     # sesion.procesar(lines)
+    # TODO: add proper type
+    sessions: list[object] = getSessions(rows)
+    print('sessions', sessions)
 
     # print("Creando las sesiones...")
     # sesiones = sesion.crearSesion()
