@@ -5,7 +5,7 @@ DATE_FORMAT = "%H:%M:%S %d/%m/%Y"
 SEPARATOR = "|"
 
 # Returns the session date [initDate, endDate]
-def getSessionDate(rows: list[str]) -> list[str]:
+def getSessionDate(rows: list[str]):
     sessionDate: list[str] = []
     for row in rows:
         names = row.split(SEPARATOR)

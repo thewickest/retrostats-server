@@ -1,7 +1,7 @@
 from datetime import datetime
 # from nfc import NFC as nfc
 # from dbFuncs import Datos as datos
-from readScores import ScoreReader as scoreReader
+from readScores import getScores
 from pathlib import Path
 
 #leo cada linea para coger el emulador y la ruta de la rom
@@ -79,9 +79,10 @@ def getUser(self):
         except:
             print("No se puede conectar a la base de datos")
     return user
-def getScore(ruta,rom):
-    sr = scoreReader()
-    return sr.getScores(ruta,rom)
+# def getScore(ruta,rom):
+#     sr = scoreReader()
+#     return sr.getScores(ruta,rom)
+
 
 def getSessions(rowSessions: list[str]):
     objSessions: list[object] = []
@@ -90,7 +91,8 @@ def getSessions(rowSessions: list[str]):
         state: str = names[1]
         gamePath: str = names[4]
         if(state != 'P' and state != 'start' and state != 'end'):
-            score = getScore(gamePath, 'pang.zip')
+            gamePath = ''
+            score = getScores(gamePath, 'pang')
             newSession: object = {
                 'initDate': names[0],
                 'duration': names[1],

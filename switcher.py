@@ -4,15 +4,19 @@ rutaScoresMame2003 = "mame2003/hi/"
 c = "|"
 jump = "\n"
 home = str(Path.home())
+
+scorePath = "scores/pang.txt"
+# hiPath = "data/pang.hi"
+
 class Switcher(object):
     def hiToText(self,ruta,nombre):
         method_name = 'hiToText_' + str(nombre)
-        method = getattr(self, method_name)  
+        method = getattr(self, method_name)
         return method(ruta,nombre)
  
     def hiToText_pang(self,ruta,nombre):
-        fw = open(home+"/RetroStats/scores/"+nombre+".txt","w+")
-        with open(ruta+rutaScoresMame2003+nombre+".hi","rb") as f:
+        fw = open(scorePath,"w+")
+        with open(hiPath,"rb") as f:
             byte = "empty"
             while byte:
                 scores = []
@@ -38,8 +42,8 @@ class Switcher(object):
                 byte = f.read(1)
         fw.close() 
     def hiToText_invaders(self,ruta,nombre):
-        fw = open(home+"/RetroStats/scores/"+nombre+".txt","w+")
-        with open(ruta+rutaScoresMame2003+nombre+".hi","rb") as f:
+        fw = open(scorePath,"w+")
+        with open(hiPath,"rb") as f:
             byte = f.read(1)
             low = byte.hex()
             byte = f.read(1)

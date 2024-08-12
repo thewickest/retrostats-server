@@ -10,11 +10,12 @@ from files import openLogFile, writeLogFile
 
 logPath: str = 'logs/game_stats.log'
 
-if __name__ == "__main__":
+def main():
 
     # Process logs file
     rows: list[str] = openLogFile(logPath)
     print("Procesando las horas...")
+    print('horas', rows)
     sessionDates: list[str] = getSessionDate(rows)
     print("Sumando las horas de las sesiones....")
     sessionTime: str = getSessionTime(sessionDates)
@@ -27,7 +28,6 @@ if __name__ == "__main__":
     # sesion.procesar(lines)
     # TODO: add proper type
     sessions: list[object] = getSessions(rows)
-    print('sessions', sessions)
 
     # print("Creando las sesiones...")
     # sesiones = sesion.crearSesion()
@@ -46,3 +46,6 @@ if __name__ == "__main__":
     #     except Error as e:
     #         print(e)
     #         print("Ha habido un error al conectar con la base de datos")
+
+if __name__ == "__main__":
+    main()
