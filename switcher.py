@@ -1,22 +1,19 @@
 from pathlib import Path
 
-rutaScoresMame2003 = "mame2003/hi/"
 c = "|"
 jump = "\n"
 home = str(Path.home())
 
-scorePath = "scores/pang.txt"
-# hiPath = "data/pang.hi"
-
 class Switcher(object):
-    def hiToText(self,ruta,nombre):
-        method_name = 'hiToText_' + str(nombre)
-        method = getattr(self, method_name)
-        return method(ruta,nombre)
+    def hiToText(self, textScorePath, byteScorePath, gameName):
+        methodName = 'hiToText_' + str(gameName)
+        # Calls the
+        method = getattr(self, methodName)
+        return method(textScorePath, byteScorePath)
  
-    def hiToText_pang(self,ruta,nombre):
-        fw = open(scorePath,"w+")
-        with open(hiPath,"rb") as f:
+    def hiToText_pang(self, textScorePath, byteScorePath):
+        fw = open(textScorePath,"w+")
+        with open(byteScorePath,"rb") as f:
             byte = "empty"
             while byte:
                 scores = []
@@ -41,9 +38,9 @@ class Switcher(object):
 
                 byte = f.read(1)
         fw.close() 
-    def hiToText_invaders(self,ruta,nombre):
-        fw = open(scorePath,"w+")
-        with open(hiPath,"rb") as f:
+    def hiToText_invaders(self, textScorePath, byteScorePath):
+        fw = open(textScorePath,"w+")
+        with open(byteScorePath,"rb") as f:
             byte = f.read(1)
             low = byte.hex()
             byte = f.read(1)
@@ -53,7 +50,7 @@ class Switcher(object):
             fw.write(score)
             print(score)
         fw.close() 
-    def hiToText_mspacman(self,ruta,nombre):
+    def hiToText_mspacman(self, textScorePath, byteScorePath):
         print("no hago nada")
-    def hiToText_mslug(self,ruta,nombre):
+    def hiToText_mslug(self, textScorePath, byteScorePath):
         print("no hago nada")

@@ -2,12 +2,13 @@ import filecmp
 from shutil import copyfile
 from switcher import Switcher
 from pathlib import Path
+from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
+
 c = "|"
 jump = '\n'
-# rutaScores = "mame2003/hi/"
 
-# partialScorePath =  "mame2003/hi/"
-partialScorePath = 'data/'
+# TODO find a way to change this
+partialScorePath =  "/mame2003/hi"
 home = str(Path.home())
 
 def compareScoreFiles(nameGame):
@@ -46,21 +47,27 @@ def getDifference(file1,file2):
         print(lines)
     return lines
 
-def processHiFiles(ruta,nameGame):
+def processHiFiles(textScorePath, byteScoresPath,nameGame):
     sw = Switcher()
-    sw.hiToText(ruta,nameGame)
+    sw.hiToText(textScorePath, byteScoresPath, nameGame)
 
-def getScores(gamePath, nameGame):
+def getScores(gamePath, gameName):
 
     gamePath = gamePath.split("/")
     gamePath.pop()
     gamePath = ("/").join(gamePath)
 
-    fullScorePath = gamePath + partialScorePath + nameGame + ".hi"
+    scorePath = gamePath + partialScorePath
+    if (ENV == 'local'):
+        scorePath = BYTE_SCORES_PATH
+
+    byteScorePath = scorePath +'/'+ gameName + ".hi"
+    textScorePath = TEXT_SCORES_PATH +'/'+ gameName + '.txt'
+
 
     # Converts the score files saved in bytes into text.
     # TODO maybe after this, we could delete the HI file to always save a score even if it's too low
-    processHiFiles(fullScorePath, nameGame)
+    processHiFiles(textScorePath, byteScorePath, gameName)
 
     # Return the scores if there is score differences
-    return compareScoreFiles(nameGame)
+    return compareScoreFiles(gameName)

@@ -2,28 +2,21 @@ from datetime import date
 from readTimes import getSessionDate, getSessionTime
 from writeSession import getSessions
 from files import openLogFile, writeLogFile
-# from dbfuncs import Datos
-# from writesesion import Sesion
-# from mysql.connector import Error
-
-# logPath: str = '~/RetroStats/logs/game_stats.log'
-
-logPath: str = 'logs/game_stats.log'
+from variables import LOGS_PATH
 
 def main():
 
     # Process logs file
-    rows: list[str] = openLogFile(logPath)
+    rows: list[str] = openLogFile(LOGS_PATH)
     print("Procesando las horas...")
-    print('horas', rows)
     sessionDates: list[str] = getSessionDate(rows)
     print("Sumando las horas de las sesiones....")
     sessionTime: str = getSessionTime(sessionDates)
     if(len(sessionDates)):
-        writeLogFile(logPath, sessionDates, sessionTime)
+        writeLogFile(LOGS_PATH, sessionDates, sessionTime)
 
     # Get sessions from the log file
-    rows: list[str] = openLogFile(logPath)
+    rows: list[str] = openLogFile(LOGS_PATH)
     print("Procesando las sesiones...")
     # sesion.procesar(lines)
     # TODO: add proper type
