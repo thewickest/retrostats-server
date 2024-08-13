@@ -89,10 +89,13 @@ def getSessions(rowSessions: list[str]):
         if(state != 'P' and state != 'start' and state != 'end'):
             # TODO get name from the path
             score = getScores(gamePath, 'pang')
+            # TODO change duration convertion and game ids
             newSession: object = {
                 'initDate': names[0],
-                'duration': names[1],
-                'score': score
+                'duration': 600,
+                'score': int(score[0]),
+                'gameId': 1,
+                'userId': 1,
             }
             objSessions.append(newSession)
     return objSessions

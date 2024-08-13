@@ -3,6 +3,7 @@ from readTimes import getSessionDate, getSessionTime
 from writeSession import getSessions
 from files import openLogFile, writeLogFile
 from variables import LOGS_PATH
+from api.api import createSession
 
 def main():
 
@@ -21,6 +22,12 @@ def main():
     # sesion.procesar(lines)
     # TODO: add proper type
     sessions: list[object] = getSessions(rows)
+    # print(sessions)
+
+    # Test API
+    # getAPISessions()
+    # TODO add error handlers
+    createSession(sessions[0])
 
     # print("Creando las sesiones...")
     # sesiones = sesion.crearSesion()

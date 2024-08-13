@@ -1,10 +1,12 @@
 import requests
 
-url = '/sessions'
+url = 'http://localhost:3001/sessions'
+token= 'Bearer almost'
 
-class API(object):
-    def _init_():
-        super()
+def createSession(session):
+    response = requests.post(url, json=session, headers={"Authorization": token})
+    print(response.json())
 
-    def createSession(session):
-        print('session {session}')
+def getAPISessions():
+    response = requests.get(url)
+    print(response.json())
