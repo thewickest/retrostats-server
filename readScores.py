@@ -13,10 +13,8 @@ home = str(Path.home())
 
 def compareScoreFiles(nameGame):
     #se compara para saber si hay puntuaciones nuevas
-    # fr = home+"/RetroStats/scores/"+nameGame+".txt"
-    # fa = home+"/RetroStats/scores/"+nameGame+"B.txt"
-    fr = ('./scores/%s.txt' % (nameGame))
-    fa = ('./scores/%sB.txt' % (nameGame))
+    fr = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
+    fa = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
 
     #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
