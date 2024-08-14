@@ -1,71 +1,52 @@
 from datetime import datetime
-# from nfc import NFC as nfc
-# from dbFuncs import Datos as datos
 from readScores import getScores
 from pathlib import Path
+from constants import info, error
+from api.api import getGameBySlug, login
+from variables import LOGS_PATH
 
-#leo cada linea para coger el emulador y la ruta de la rom
 SEPARATOR = "|"
-b = "/"
-log = False
-roms = [] #zips
-rutaRoms = []
-rom = ""
-rutaRom = ""
-score = ""
-t_juego = []
-f_juego = []
-home = str(Path.home())
+SLASH = "/"
+DOT = "."
 
-def procesar(self,lines):
-    fw = open(home+"/RetroStats/logs/game_stats.log","w+")
-    for l in lines:
-        l = l.split(c)
-        r = l[4].split(b)[6] #tengoq que quitar el espacio del principio, mirar como
-        if(l[1]!="P" and l[1]!="start" and l[1]!="end"):
-            rutaRoms.append(l[4].rstrip(r))
-            roms.append(r) #nombre del zip extraido de la ruta
-            t_juego.append(l[1])
-            f_juego.append(l[0])
-        e = c.join(l)
-        fw.write(e)
-    fw.close()
-def confirmarSesion(self,lines):
-    fw = open(home+"/RetroStats/logs/game_stats.log","w+")
-    for l in lines:
-        l = l.split(c)
-        if(l[1]!="P" and l[1]!="start" and l[1]!="end"):
-            l[1]="P"
-        e = c.join(l)
-        fw.write(e)
-    fw.close()    
-def crearSesion(self):
-    sesiones =[] 
-    scores = []
-    if(t_juego!=[]):
-        user = self.getUser()
-        for r in roms:
-            rom = roms.pop() #Nombre Rom
-            ruta = rutaRoms.pop()
-            tiempo = t_juego.pop()
-            fecha = f_juego.pop()
+def registerSession(rows):
+    logFile = open(LOGS_PATH,'w+')
+    for row in rows:
+        row = row.split(SEPARATOR)
+        if(row[1] != 'P' and row[1] != 'start' and row[1] != 'end'):
+            row[1] = 'P'
+        processedRow = SEPARATOR.join(row)
+        logFile.write(processedRow)
+    logFile.close()
+ 
+# def crearSesion(self):
+#     sesiones =[] 
+#     scores = []
+#     if(t_juego!=[]):
+#         user = self.getUser()
+#         for r in roms:
+#             rom = roms.pop() #Nombre Rom
+#             ruta = rutaRoms.pop()
+#             tiempo = t_juego.pop()
+#             fecha = f_juego.pop()
 
-            roms.insert(0,rom)
-            rutaRoms.insert(0,ruta)
-            t_juego.insert(0,tiempo)
-            f_juego.insert(0,fecha)
+#             roms.insert(0,rom)
+#             rutaRoms.insert(0,ruta)
+#             t_juego.insert(0,tiempo)
+#             f_juego.insert(0,fecha)
 
-            datetimeobject = datetime.strptime(fecha, "%H:%M:%S %d/%m/%Y")
-            fecha = datetimeobject.strftime("%Y-%m-%d %H:%M:%S")
-            scores = self.getScores(ruta,rom)
-            #si hay mas de una puntuacion por sesion se duplican
-            for s in scores:
-                tupla = (0,user,rom,fecha,tiempo,s)
-                sesiones.insert(0,tupla)
-                print(tupla)
+#             datetimeobject = datetime.strptime(fecha, "%H:%M:%S %d/%m/%Y")
+#             fecha = datetimeobject.strftime("%Y-%m-%d %H:%M:%S")
+#             scores = self.getScores(ruta,rom)
+#             #si hay mas de una puntuacion por sesion se duplican
+#             for s in scores:
+#                 tupla = (0,user,rom,fecha,tiempo,s)
+#                 sesiones.insert(0,tupla)
+#                 print(tupla)
 
-        return sesiones
-    else: print("La lista ya está procesada")
+#         return sesiones
+#     else: print("La lista ya está procesada")
+
 def getUser(self):
     user = "default"
     lector = nfc()
@@ -80,22 +61,51 @@ def getUser(self):
             print("No se puede conectar a la base de datos")
     return user
 
-def getSessions(rowSessions: list[str]):
+def getSession(rowSessions: list[str]):
     objSessions: list[object] = []
     for session in rowSessions:
         names: list[str] = session.split(SEPARATOR)
         state: str = names[1]
         gamePath: str = names[4]
+        pathSections: str = gamePath.split(SLASH)
+        gameFile = pathSections[len(pathSections)-1]
+        gameName = gameFile.split(DOT)[0]
+
         if(state != 'P' and state != 'start' and state != 'end'):
+            # Init Date
+            initDate = names[0]
+
+            # Score
             # TODO get name from the path
-            score = getScores(gamePath, 'pang')
+            # TODO get the max score maybe ? 
+            score = getScores(gamePath, gameName)
+
+            # Duration
+            stringDuration = names[1]
+            dateTimeDuration = datetime.strptime(stringDuration, "%H:%M:%S") - datetime.strptime('00:00:00', "%H:%M:%S")
+            duration = dateTimeDuration.total_seconds()
+
+            # Game Id
+            try:
+                data = login()
+                token = data['access_token']
+                strapiGame = getGameBySlug(gameName, token)
+                gameId = strapiGame['id']
+            except ConnectionError as err:
+                print(f'{error} There was some error connecting to the API. Probably is down')
+
+            # User Id
+            # TODO read nfc and try to get auser if no use is found
+            # we get a default user example: userId 1
+
             # TODO change duration convertion and game ids
             newSession: object = {
-                'initDate': names[0],
-                'duration': 600,
-                'score': int(score[0]),
-                'gameId': 1,
+                'initDate': initDate,
+                'duration': int(duration),
+                'score': int(max(score)),
+                'gameId': gameId,
                 'userId': 1,
             }
             objSessions.append(newSession)
-    return objSessions
+    # TODO we always return the first but we should do something with it
+    return objSessions[0] if len(objSessions) > 0 else None

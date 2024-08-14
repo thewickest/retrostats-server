@@ -42,7 +42,6 @@ def getDifference(file1,file2):
                 break
         if (flag==True):
             lines.insert(0,lf[0])
-        print(lines)
     return lines
 
 def processHiFiles(textScorePath, byteScoresPath,nameGame):

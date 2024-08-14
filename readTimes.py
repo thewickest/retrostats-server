@@ -21,6 +21,7 @@ def getSessionDate(rows: list[str]):
 # Returns the sessiontime endDate - initDate
 def getSessionTime(sessionDate: list[str]) -> str:
     sessionTime: str = ''
+    # TODO do a forloop
     if(len(sessionDate) > 0):
         sessionTime: datetime = datetime.strptime(sessionDate[1], DATE_FORMAT) - datetime.strptime(sessionDate[0], DATE_FORMAT)
     return str(sessionTime)
