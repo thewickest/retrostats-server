@@ -5,6 +5,7 @@ from variables import LOGS_PATH
 from api.api import createSession, login
 from requests import ConnectionError
 from constants import info, error
+import requests
 
 def main():
 
@@ -27,12 +28,19 @@ def main():
         try:
             data = login()
             token = data["access_token"]
-            strapiSession = createSession(session, token)
+            response = createSession(session, token)
+            response.raise_for_status()
+
+            strapiSession = response.json()
+            # TODO handle errors inside the api sevice
             print(f'{info} Session created succesfully')
             print(f'{info}', strapiSession)
             registerSession(rows)
         except ConnectionError as err:
             print(f'{error} There was some error connecting to the API. Probably is down')
+        except requests.exceptions.HTTPError as err:
+            print(f'{error}', err)
+            print(f'{error}', response.json())
     else:
         print(f'{info} No session to register')
 

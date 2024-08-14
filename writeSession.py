@@ -2,7 +2,7 @@ from datetime import datetime
 from readScores import getScores
 from pathlib import Path
 from constants import info, error
-from api.api import getGameBySlug, login
+from api.api import getGameBySlug, login, getPlayerByNfc
 from variables import LOGS_PATH
 
 SEPARATOR = "|"
@@ -73,10 +73,11 @@ def getSession(rowSessions: list[str]):
 
         if(state != 'P' and state != 'start' and state != 'end'):
             # Init Date
-            initDate = names[0]
+            stringDate = names[0]
+            dateTime = datetime.strptime(stringDate, '%H:%M:%S %d/%m/%Y')
+            initDate = dateTime.strftime('%Y-%m-%dT%H:%M:%S')
 
             # Score
-            # TODO get name from the path
             # TODO get the max score maybe ? 
             score = getScores(gamePath, gameName)
 
@@ -94,9 +95,21 @@ def getSession(rowSessions: list[str]):
             except ConnectionError as err:
                 print(f'{error} There was some error connecting to the API. Probably is down')
 
+            # Not implemented yet
+            # Start the process of taking the nfc from the user
+
             # User Id
             # TODO read nfc and try to get auser if no use is found
             # we get a default user example: userId 1
+            try:
+                data = login()
+                token = data['access_token']
+                # TODO change this obviously
+                nfc = '1234'
+                strapiGameUser = getPlayerByNfc(nfc, token)
+                gameUserId = strapiGameUser['id']
+            except ConnectionError as err:
+                print(f'{error} There was some error connecting to the API. Probably is down')
 
             # TODO change duration convertion and game ids
             newSession: object = {
@@ -104,7 +117,7 @@ def getSession(rowSessions: list[str]):
                 'duration': int(duration),
                 'score': int(max(score)),
                 'gameId': gameId,
-                'userId': 1,
+                'userId': gameUserId,
             }
             objSessions.append(newSession)
     # TODO we always return the first but we should do something with it

@@ -10,12 +10,16 @@ def login():
     return response.json()
 
 def createSession(session: str, token: str):
-    response = requests.post(f'{API_URL}/sessions', json=session, 
-                             headers={'Authorization': f'Bearer {token}'})
-    return response.json()
+    return requests.post(f'{API_URL}/sessions', json=session, 
+                            headers={'Authorization': f'Bearer {token}'})
+    
 
 def getGameBySlug(gameName: str, token: str):
-    # response = requests.get(f'{API_URL}/game/slug/{gameName}', 
-    #                         headers={'Authorization': f'Bearer {token}'})
-    # return response.json()
-    return { 'id': 1, 'name': 'pang'}
+    response = requests.get(f'{API_URL}/games/slug/{gameName}', 
+                            headers={'Authorization': f'Bearer {token}'})
+    return response.json()
+
+def getPlayerByNfc(nfc: str, token: str):
+    response = requests.get(f'{API_URL}/players/{nfc}', 
+                            headers={'Authorization': f'Bearer {token}'})
+    return response.json()

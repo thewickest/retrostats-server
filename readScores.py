@@ -21,8 +21,8 @@ def compareScoreFiles(nameGame):
     try:
         comp = filecmp.cmp(fr,fa,shallow = False)
         if (not comp):
-            file1 = open(fr,"r")
-            file2 = open(fa,"r")
+            file1 = open(fr,"r+")
+            file2 = open(fa,"r+")
             scores = getDifference(file1,file2)
     finally:
         copyfile(fr,fa)
