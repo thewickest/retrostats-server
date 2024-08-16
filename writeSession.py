@@ -113,7 +113,6 @@ def getSession(rowSessions: list[str]):
             except Exception as err:
                 print(f'{error}',err)
 
-            # TODO change duration convertion and game ids
             newSession: object = {
                 'initDate': initDate,
                 'duration': int(duration),

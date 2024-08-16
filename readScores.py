@@ -10,7 +10,6 @@ jump = '\n'
 
 # TODO find a way to change this
 partialScorePath =  "/mame2003/hi"
-home = str(Path.home())
 
 def copyScoreFile(slug):
     currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
@@ -19,6 +18,7 @@ def copyScoreFile(slug):
 
 
 def compareScoreFiles(nameGame):
+    # TODO the first time doesnt compare anything because there is no scoreTxt file
     #se compara para saber si hay puntuaciones nuevas
     fr = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
     fa = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))

@@ -25,7 +25,7 @@ def main():
     session: object = getSession(rows)
 
     # TODO add error handlers if 401
-    if(session):
+    if(session and session['score'] > 0):
         try:
             data = login()
             token = data["access_token"]
