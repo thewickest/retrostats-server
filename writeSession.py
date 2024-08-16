@@ -87,13 +87,14 @@ def getSession(rowSessions: list[str]):
             duration = dateTimeDuration.total_seconds()
 
             # Game Id
+            gameId = None
             try:
                 data = login()
-                token = data['access_token']
-                strapiGame = getGameBySlug(gameName, token)
-                gameId = strapiGame['id']
-            except ConnectionError as err:
-                print(f'{error} There was some error connecting to the API. Probably is down')
+                token = data['access_token'] if data else None
+                strapiGame = getGameBySlug(gameName, token) if token else None
+                gameId = strapiGame['id'] if strapiGame else None
+            except Exception as err:
+                print(f'{error}',err)
 
             # Not implemented yet
             # Start the process of taking the nfc from the user
@@ -101,6 +102,7 @@ def getSession(rowSessions: list[str]):
             # User Id
             # TODO read nfc and try to get auser if no use is found
             # we get a default user example: userId 1
+            gameUserId = None
             try:
                 data = login()
                 token = data['access_token']
@@ -108,8 +110,8 @@ def getSession(rowSessions: list[str]):
                 nfc = '1234'
                 strapiGameUser = getPlayerByNfc(nfc, token)
                 gameUserId = strapiGameUser['id']
-            except ConnectionError as err:
-                print(f'{error} There was some error connecting to the API. Probably is down')
+            except Exception as err:
+                print(f'{error}',err)
 
             # TODO change duration convertion and game ids
             newSession: object = {
