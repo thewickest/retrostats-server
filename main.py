@@ -5,6 +5,7 @@ from variables import LOGS_PATH
 from api.api import createSession, login
 from requests import ConnectionError
 from constants import info, error
+from readScores import copyScoreFile
 import requests
 
 def main():
@@ -24,7 +25,7 @@ def main():
     session: object = getSession(rows)
 
     # TODO add error handlers if 401
-    if(session):
+    if(session and session['score'] > 0):
         try:
             data = login()
             token = data["access_token"]
@@ -35,6 +36,7 @@ def main():
             # TODO handle errors inside the api sevice
             print(f'{info} Session created succesfully')
             print(f'{info}', strapiSession)
+            copyScoreFile(session['slug'])
             registerSession(rows)
         except ConnectionError as err:
             print(f'{error} There was some error connecting to the API. Probably is down')

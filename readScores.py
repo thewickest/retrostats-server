@@ -3,15 +3,22 @@ from shutil import copyfile
 from switcher import Switcher
 from pathlib import Path
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
+from constants import error
 
 c = "|"
 jump = '\n'
 
 # TODO find a way to change this
 partialScorePath =  "/mame2003/hi"
-home = str(Path.home())
+
+def copyScoreFile(slug):
+    currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
+    previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
+    copyfile(currentFileScore, previousFileScore)
+
 
 def compareScoreFiles(nameGame):
+    # TODO the first time doesnt compare anything because there is no scoreTxt file
     #se compara para saber si hay puntuaciones nuevas
     fr = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
     fa = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
@@ -24,8 +31,9 @@ def compareScoreFiles(nameGame):
             file1 = open(fr,"r+")
             file2 = open(fa,"r+")
             scores = getDifference(file1,file2)
+    except Exception as err:
+        print(f'{error}', err)
     finally:
-        copyfile(fr,fa)
         return scores
 
 def getDifference(file1,file2):
