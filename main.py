@@ -36,7 +36,7 @@ def main():
             # TODO handle errors inside the api sevice
             print(f'{info} Session created succesfully')
             print(f'{info}', strapiSession)
-            copyScoreFile(session['slug'])
+            copyScoreFile(session['gameName'])
             registerSession(rows)
         except ConnectionError as err:
             print(f'{error} There was some error connecting to the API. Probably is down')
