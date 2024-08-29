@@ -57,6 +57,18 @@ class Switcher(object):
         except Exception as err:
             print(f'{error}', err)
     def hiToText_mspacman(self, textScorePath, byteScorePath):
-        print("no hago nada")
+        try:
+            fw = open(textScorePath,"w+")
+            with open(byteScorePath,"rb") as f:
+                byte = f.read(1)
+                low = byte.hex()
+                byte = f.read(1)
+                hi = byte.hex()
+                
+                score = str(hi)+str(low)
+                fw.write(score)
+            fw.close()
+        except:
+            print()
     def hiToText_mslug(self, textScorePath, byteScorePath):
         print("no hago nada")
