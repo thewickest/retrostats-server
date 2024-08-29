@@ -118,6 +118,7 @@ def getSession(rowSessions: list[str]):
                 'duration': int(duration),
                 'score': int(max(score)),
                 'gameId': gameId,
+                'gameName': gameName,
                 'userId': gameUserId,
             }
             objSessions.append(newSession)

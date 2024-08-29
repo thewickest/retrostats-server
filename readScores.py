@@ -1,7 +1,7 @@
 import filecmp 
 from shutil import copyfile
 from switcher import Switcher
-from pathlib import Path
+import os.path
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
 from constants import error
 
@@ -20,17 +20,21 @@ def copyScoreFile(slug):
 def compareScoreFiles(nameGame):
     # TODO the first time doesnt compare anything because there is no scoreTxt file
     #se compara para saber si hay puntuaciones nuevas
-    fr = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
-    fa = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
+    currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
+    previousPath = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
+
+    if(not os.path.isfile(previousPath)):
+        previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
     #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
     try:
-        comp = filecmp.cmp(fr,fa,shallow = False)
+        comp = filecmp.cmp(currentPath, previousPath, shallow = False)
         if (not comp):
-            file1 = open(fr,"r+")
-            file2 = open(fa,"r+")
-            scores = getDifference(file1,file2)
+            currentFile = open(currentPath,"r+")
+            previousFile = open(previousPath,"r+")
+            scores = getDifference(currentFile, previousFile)
+            print('scores', scores)
     except Exception as err:
         print(f'{error}', err)
     finally:
