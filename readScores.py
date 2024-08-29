@@ -1,7 +1,7 @@
 import filecmp 
 from shutil import copyfile
 from switcher import Switcher
-from pathlib import Path
+import os.path
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
 from constants import error
 
@@ -22,7 +22,9 @@ def compareScoreFiles(nameGame):
     #se compara para saber si hay puntuaciones nuevas
     currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
     previousPath = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
-    # open(previousPath, 'w')
+
+    if(not os.path.isfile(previousPath)):
+        previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
     #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
