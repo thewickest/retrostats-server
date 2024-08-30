@@ -84,5 +84,43 @@ class Switcher(object):
             fw.close()
         except Exception as err:
             print(f'{error}', err)
-    def hiToText_mslug(self, textScorePath, byteScorePath):
-        print("no hago nada")
+    def hiToText_mslug2(self, textScorePath, byteScorePath):
+        try:
+            fw = open(textScorePath,"w+")
+            with open(byteScorePath,"rb") as f:
+                byte = 'empty'
+                while byte:
+                    scores = []
+                    byte = f.read(1)
+                    nothing = byte.hex()
+
+                    # print(position)
+                    # scores.append(position)
+
+                    byte = f.read(3)
+                    score = byte.hex()
+                    scores.append(score)
+
+                    byte = f.read(3)
+                    name = str(byte,"latin1")
+                    scores.append(name)
+
+                    byte = f.read(1)
+                    # nothing = byte.hex()
+                    # scores.append(nothing)
+
+                    byte = f.read(1)
+                    state = byte.hex()
+                    scores.append(state)
+
+                    byte = f.read(1)
+                    other = byte.hex()
+                    scores.append(other)
+
+                    # byte = f.read(3)
+
+                    line = c.join(scores)
+                    fw.write(line+jump)
+            fw.close()
+        except Exception as err:
+            print(f'{error}', err)

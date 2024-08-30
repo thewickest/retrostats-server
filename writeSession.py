@@ -69,6 +69,8 @@ def getSession(rowSessions: list[str]):
         gamePath: str = names[4]
         pathSections: str = gamePath.split(SLASH)
         gameFile = pathSections[len(pathSections)-1]
+        gameEmulator = names[3]
+        gameEmulator = gameEmulator[3:]
         gameName = gameFile.split(DOT)[0]
 
         if(state != 'P' and state != 'start' and state != 'end'):
@@ -79,7 +81,7 @@ def getSession(rowSessions: list[str]):
 
             # Score
             # TODO get the max score maybe ? 
-            score = getScores(gamePath, gameName)
+            score = getScores(gamePath, gameName, gameEmulator)
 
             # Duration
             stringDuration = names[1]

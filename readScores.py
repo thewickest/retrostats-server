@@ -9,7 +9,6 @@ c = "|"
 jump = '\n'
 
 # TODO find a way to change this
-partialScorePath =  "/mame2003/hi"
 
 def copyScoreFile(slug):
     currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
@@ -60,13 +59,13 @@ def processHiFiles(textScorePath, byteScoresPath,nameGame):
     sw = Switcher()
     sw.hiToText(textScorePath, byteScoresPath, nameGame)
 
-def getScores(gamePath, gameName):
+def getScores(gamePath, gameName, gameEmulator):
 
     gamePath = gamePath.split("/")
     gamePath.pop()
     gamePath = ("/").join(gamePath)
 
-    scorePath = gamePath + partialScorePath
+    scorePath = gamePath + '/' + gameEmulator + '/hi'
     if (ENV == 'local'):
         scorePath = BYTE_SCORES_PATH
 
