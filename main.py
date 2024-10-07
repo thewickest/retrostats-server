@@ -5,7 +5,7 @@ from variables import LOGS_PATH
 from api.api import createSession, login
 from requests import ConnectionError
 from constants import info, error
-from readScores import copyScoreFile
+from readScores import resetScores
 import requests
 
 def main():
@@ -36,7 +36,13 @@ def main():
             # TODO handle errors inside the api sevice
             print(f'{info} Session created succesfully')
             print(f'{info}', strapiSession)
-            copyScoreFile(session['gameName'])
+            ## TODO instead of copying the file, we can register the score inside
+            ## a database
+            # copyScoreFile(session['gameName'])
+            # NOTE each time a player starts a new game, the byte scores are new,
+            # that means that he/she does not need to have a high score to save the
+            # score into the system. Just the minimum
+            resetScores(session)
             registerSession(rows)
         except ConnectionError as err:
             print(f'{error} There was some error connecting to the API. Probably is down')

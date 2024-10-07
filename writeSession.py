@@ -110,6 +110,7 @@ def getSession(rowSessions: list[str]):
                 token = data['access_token']
                 # TODO change this obviously
                 nfc = '1234'
+                # TODO if the user is not found, use a fake user
                 strapiGameUser = getPlayerByNfc(nfc, token)
                 gameUserId = strapiGameUser['id']
             except Exception as err:
@@ -121,6 +122,8 @@ def getSession(rowSessions: list[str]):
                 'score': int(max(score)),
                 'gameId': gameId,
                 'gameName': gameName,
+                'gameEmulator': gameEmulator,
+                'gamePath': gamePath,
                 'userId': gameUserId,
             }
             objSessions.append(newSession)

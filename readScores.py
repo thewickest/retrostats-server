@@ -1,9 +1,9 @@
 import filecmp 
 from shutil import copyfile
 from switcher import Switcher
-import os.path
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
 from constants import error
+from files import deleteFile
 
 c = "|"
 jump = '\n'
@@ -15,15 +15,28 @@ def copyScoreFile(slug):
     previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
     copyfile(currentFileScore, previousFileScore)
 
+def resetScores(session):
+    slug = session['gameName']
+    emulator = session['gameEmulator']
+    gamePath = session['gamePath']
+    textScoreFile = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
+
+    scorePath = gamePath + '/' + emulator + '/hi'
+    if (ENV == 'local'):
+        scorePath = BYTE_SCORES_PATH
+    byteScoreFile = scorePath +'/'+ slug + ".hi"
+
+    deleteFile(textScoreFile)
+    deleteFile(byteScoreFile)
 
 def compareScoreFiles(nameGame):
     # TODO the first time doesnt compare anything because there is no scoreTxt file
     #se compara para saber si hay puntuaciones nuevas
     currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
-    previousPath = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
+    previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
-    if(not os.path.isfile(previousPath)):
-        previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
+    # if(not os.path.isfile(previousPath)):
+    #     previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
     #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
