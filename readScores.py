@@ -30,15 +30,9 @@ def resetScores(session):
     deleteFile(byteScoreFile)
 
 def compareScoreFiles(nameGame):
-    # TODO the first time doesnt compare anything because there is no scoreTxt file
-    #se compara para saber si hay puntuaciones nuevas
     currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
     previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
-    # if(not os.path.isfile(previousPath)):
-    #     previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
-
-    #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
     try:
         comp = filecmp.cmp(currentPath, previousPath, shallow = False)
@@ -87,8 +81,7 @@ def getScores(gamePath, gameName, gameEmulator):
 
 
     # Converts the score files saved in bytes into text.
-    # TODO maybe after this, we could delete the HI file to always save a score even if it's too low
     processHiFiles(textScorePath, byteScorePath, gameName)
 
-    # Return the scores if there is score differences
-    return compareScoreFiles(gameName)
+    scores =  compareScoreFiles(gameName)
+    return int(max(scores))

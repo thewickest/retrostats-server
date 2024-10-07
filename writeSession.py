@@ -1,7 +1,6 @@
 from datetime import datetime
 from readScores import getScores
-from pathlib import Path
-from constants import info, error
+from constants import error
 from api.api import getGameBySlug, login, getPlayerByNfc
 from variables import LOGS_PATH
 
@@ -80,7 +79,6 @@ def getSession(rowSessions: list[str]):
             initDate = dateTime.strftime('%Y-%m-%dT%H:%M:%S')
 
             # Score
-            # TODO get the max score maybe ? 
             score = getScores(gamePath, gameName, gameEmulator)
 
             # Duration
@@ -119,7 +117,7 @@ def getSession(rowSessions: list[str]):
             newSession: object = {
                 'initDate': initDate,
                 'duration': int(duration),
-                'score': int(max(score)),
+                'score': score,
                 'gameId': gameId,
                 'gameName': gameName,
                 'gameEmulator': gameEmulator,
@@ -127,5 +125,4 @@ def getSession(rowSessions: list[str]):
                 'userId': gameUserId,
             }
             objSessions.append(newSession)
-    # TODO we always return the first but we should do something with it
-    return objSessions[0] if len(objSessions) > 0 else None
+    return objSessions if len(objSessions) > 0 else None
