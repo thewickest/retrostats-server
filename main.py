@@ -4,9 +4,10 @@ from files import openLogFile, writeLogFile
 from variables import LOGS_PATH
 from api.api import createSession, login
 from requests import ConnectionError
-from constants import info, error
+from constants import info, error, warn
 from readScores import resetScores
 import requests
+from dbfuncs import Database
 
 def main():
 
@@ -21,21 +22,42 @@ def main():
 
     rows: list[str] = openLogFile(LOGS_PATH)
     print(f'{info} Procesando las sesiones...')
-    # TODO: add proper type
-    sessions: list[object] = getSession(rows)
 
-    # TODO add error handlers if 401
-    if(len(sessions)):
+    # Login into the API to get the Access token
+    token = None
+    try:
+        response = login()
+        response.raise_for_status()
+        data = response.json()
+        token = data['access_token'] if data else None
+    except ConnectionError:
+        print(f'{error} Unable to login into the API. The API is down.')
+    except requests.exceptions.HTTPError as err:
+        if(err.response.status_code == 401):
+            print(f'{error} Unauthorized user!')
+    except Exception as err:
+        print('something')
+        print(err)
+
+    # Generate the sessions
+    sessions: list[object] = []
+    if(token):
+        sessions: list[object] = getSession(rows, token)
+
+    if(len(sessions) > 0 and token):
+        ## save sesssion in local database
+        # try:
+        #     database = Database()
+        #     database.connect()
+        # except:
+        #     print('cant connect')
+
+        # save session in api
         try:
-            data = login()
-            token = data["access_token"]
-
             for session in sessions:
                 response = createSession(session, token)
                 response.raise_for_status()
-
                 strapiSession = response.json()
-                # TODO handle errors inside the api sevice
                 print(f'{info} Session created succesfully')
                 print(f'{info}', strapiSession)
 
@@ -52,11 +74,18 @@ def main():
         except requests.exceptions.HTTPError as err:
             print(f'{error}', err)
             print(f'{error}', response.json())
-        else: #If everything was good
-            registerSession(rows)
-            resetScores(session)
     else:
-        print(f'{info} No session to register')
+        print(f'{warn} No sessions to register')
+
+    # even if the creation of the session goes wrong, we reset the state of the scores to make sure that the next session
+    # doesn't conflict with the new ones.
+    # This is because we don't have any way to determine which score belongs to which session if there is a many to many relation.
+    try:
+        registerSession(rows)
+        resetScores(sessions)
+    except Exception as err:
+        print(f'{error} There was an error while reseting the scores')
+        print(f'{error}', err)
 
 if __name__ == "__main__":
     main()

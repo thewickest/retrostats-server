@@ -40,7 +40,6 @@ def writeLogFile(logPath: str, sessionDate: list[str], sessionTime: str):
 def deleteFile(path: str):
     try:
         os.remove(path)
-        print(f"File '{path}' deleted successfully.")
     except FileNotFoundError:
         print(f"File '{path}' not found.")
     except PermissionError:

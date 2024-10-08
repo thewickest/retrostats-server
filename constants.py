@@ -10,3 +10,4 @@ UNDERLINE = '\033[4m'
 
 info = f"[{OKGREEN}INFO{ENDC}]"
 error = f"[{FAIL}ERROR{ENDC}]"
+warn = f"[{WARNING}WARNING{ENDC}]"

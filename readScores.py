@@ -15,19 +15,20 @@ def copyScoreFile(slug):
     previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
     copyfile(currentFileScore, previousFileScore)
 
-def resetScores(session):
-    slug = session['gameName']
-    emulator = session['gameEmulator']
-    gamePath = session['gamePath']
-    textScoreFile = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
+def resetScores(sessions):
+    for session in sessions:
+        slug = session['gameName']
+        emulator = session['gameEmulator']
+        gamePath = session['gamePath']
+        textScoreFile = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
 
-    scorePath = gamePath + '/' + emulator + '/hi'
-    if (ENV == 'local'):
-        scorePath = BYTE_SCORES_PATH
-    byteScoreFile = scorePath +'/'+ slug + ".hi"
+        scorePath = gamePath + '/' + emulator + '/hi'
+        if (ENV == 'local'):
+            scorePath = BYTE_SCORES_PATH
+        byteScoreFile = scorePath +'/'+ slug + ".hi"
 
-    deleteFile(textScoreFile)
-    deleteFile(byteScoreFile)
+        deleteFile(textScoreFile)
+        deleteFile(byteScoreFile)
 
 def compareScoreFiles(nameGame):
     currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
@@ -40,7 +41,7 @@ def compareScoreFiles(nameGame):
             currentFile = open(currentPath,"r+")
             previousFile = open(previousPath,"r+")
             scores = getDifference(currentFile, previousFile)
-            print('scores', scores)
+            # print('scores', scores)
     except Exception as err:
         print(f'{error}', err)
     finally:
@@ -83,5 +84,4 @@ def getScores(gamePath, gameName, gameEmulator):
     # Converts the score files saved in bytes into text.
     processHiFiles(textScorePath, byteScorePath, gameName)
 
-    scores =  compareScoreFiles(gameName)
-    return int(max(scores))
+    return compareScoreFiles(gameName)

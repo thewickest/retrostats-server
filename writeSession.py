@@ -46,21 +46,21 @@ def registerSession(rows):
 #         return sesiones
 #     else: print("La lista ya está procesada")
 
-def getUser(self):
-    user = "default"
-    lector = nfc()
-    db = datos()
-    if(lector.leerNfc() != None):
-        print(lector.id)
-        try:
-            db.connect()
-            user = db.takeid(lector.id)
-            db.close()
-        except:
-            print("No se puede conectar a la base de datos")
-    return user
+# def getUser(self):
+#     user = "default"
+#     lector = nfc()
+#     db = datos()
+#     if(lector.leerNfc() != None):
+#         print(lector.id)
+#         try:
+#             db.connect()
+#             user = db.takeid(lector.id)
+#             db.close()
+#         except:
+#             print("No se puede conectar a la base de datos")
+#     return user
 
-def getSession(rowSessions: list[str]):
+def getSession(rowSessions: list[str], token: str):
     objSessions: list[object] = []
     for session in rowSessions:
         names: list[str] = session.split(SEPARATOR)
@@ -79,7 +79,7 @@ def getSession(rowSessions: list[str]):
             initDate = dateTime.strftime('%Y-%m-%dT%H:%M:%S')
 
             # Score
-            score = getScores(gamePath, gameName, gameEmulator)
+            scores: list[str] = getScores(gamePath, gameName, gameEmulator)
 
             # Duration
             stringDuration = names[1]
@@ -87,12 +87,12 @@ def getSession(rowSessions: list[str]):
             duration = dateTimeDuration.total_seconds()
 
             # Game Id
-            gameId = None
+            gameId = 1 # default game
             try:
-                data = login()
-                token = data['access_token'] if data else None
-                strapiGame = getGameBySlug(gameName, token) if token else None
-                gameId = strapiGame['id'] if strapiGame else None
+                response = getGameBySlug(gameName, token) if token else None
+                response.raise_for_status()
+                strapiGame = response.json()
+                gameId = strapiGame['id'] if strapiGame else 1
             except Exception as err:
                 print(f'{error}',err)
 
@@ -102,27 +102,28 @@ def getSession(rowSessions: list[str]):
             # User Id
             # TODO read nfc and try to get auser if no use is found
             # we get a default user example: userId 1
-            gameUserId = None
+            gameUserId = 1 # default user
             try:
-                data = login()
-                token = data['access_token']
                 # TODO change this obviously
                 nfc = '1234'
                 # TODO if the user is not found, use a fake user
-                strapiGameUser = getPlayerByNfc(nfc, token)
-                gameUserId = strapiGameUser['id']
+                response = getPlayerByNfc(nfc, token)
+                response.raise_for_status()
+                strapiGameUser = response.json()
+                gameUserId = strapiGameUser['id'] if strapiGameUser else 1
             except Exception as err:
                 print(f'{error}',err)
-
-            newSession: object = {
-                'initDate': initDate,
-                'duration': int(duration),
-                'score': score,
-                'gameId': gameId,
-                'gameName': gameName,
-                'gameEmulator': gameEmulator,
-                'gamePath': gamePath,
-                'userId': gameUserId,
-            }
-            objSessions.append(newSession)
-    return objSessions if len(objSessions) > 0 else None
+            
+            for score in scores:
+                newSession: object = {
+                    'initDate': initDate,
+                    'duration': int(duration),
+                    'score': int(score),
+                    'gameId': gameId,
+                    'gameName': gameName,
+                    'gameEmulator': gameEmulator,
+                    'gamePath': gamePath,
+                    'userId': gameUserId,
+                }
+                objSessions.append(newSession)
+    return objSessions if len(objSessions) > 0 else []

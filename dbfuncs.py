@@ -1,7 +1,6 @@
 import mysql.connector
-from mysql.connector import Error
 
-class Datos(object):
+class Database(object):
     def _init_(self,connection,cursor):
         self.connection = connection
         self.cursor = cursor
@@ -9,12 +8,12 @@ class Datos(object):
     def connect(self):
         print("Conectando con la base de datos...")
         try:
-            self.connection = mysql.connector.connect(host='192.168.3.15', 
-                                                        database='myarcadesystem', 
-                                                        user='every', 
-                                                        password='every')
+            self.connection = mysql.connector.connect(host='192.168.3.14', 
+                                                        database='retrostats', 
+                                                        user='retrostats', 
+                                                        password='retrostats')
             self.cursor = self.connection.cursor(prepared=True)
-        except Error as e:
+        except Exception as e:
             print(e)
     def insertsesion(self,sesiones):
         # TODO: another fetch to the api
