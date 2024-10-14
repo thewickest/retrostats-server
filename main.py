@@ -4,7 +4,7 @@ from files import openLogFile, writeLogFile
 from variables import LOGS_PATH
 from api.api import createSession, login
 from requests import ConnectionError
-from constants import info, error, warn
+from constants import info, error, warn, PROCESSED, ERROR, CREATED
 from readScores import resetScores
 import requests
 from dbfuncs import Database
@@ -36,38 +36,41 @@ def main():
         if(err.response.status_code == 401):
             print(f'{error} Unauthorized user!')
     except Exception as err:
-        print('something')
-        print(err)
+        print(f'{error} Unexpected error!')
 
     # Generate the sessions
-    sessions: list[object] = []
-    if(token):
-        # Here we can check for previous sessions with status ERROR and return them
-        sessions: list[object] = getSession(rows, token)
+    # Here we can check for previous sessions with status ERROR and return them
+    sessions: list[object] = getSession(rows, token)
 
-    if(len(sessions) > 0 and token):
+    # Connect to local database
+    database = None
+    try:
+        database = Database()
+        database.connect()
+    except: 
+        print('Cant connect to local database')
+    
+    backupSessions = []
+    if(database):
         # save sesssions in local database
         try:
-            database = Database()
-            database.connect()
-            print(sessions)
             backupSessions = database.insertSessions(sessions)
-            print(backupSessions)
-            database.close()
+            # errorSessions = database.getErrorSessions()
         except Exception as err:
             print('An error ocurred while inserting the Sessions into the database')
 
-        # Or maybe here
-        # Here we can check for previous sessions with status ERROR and return them
+    if(len(backupSessions) > 0 and database):
 
         # save session in api
         try:
-            for session in sessions:
-                response = createSession(session, token)
+            for session in backupSessions:
+                response = createSession(session['session'], token)
                 response.raise_for_status()
                 strapiSession = response.json()
                 print(f'{info} Session created succesfully')
                 print(f'{info}', strapiSession)
+
+                database.updateSessions(backupSessions, PROCESSED)
 
             ## TODO instead of copying the file, we can register the score inside
             ## a database
@@ -78,15 +81,11 @@ def main():
             # score into the system. Just the minimum
         except ConnectionError as err:
             print(f'{error} There was some error connecting to the API. Probably is down')
-            # database = Database()
-            # database.connect()
-            # print(sessions)
-            # database.updateSessions(sessions, 'ERROR')
-            # database.close()
+            database.updateSessions(backupSessions, ERROR)
         except requests.exceptions.HTTPError as err:
             print(f'{error}', err)
             print(f'{error}', response.json())
-            # updateSession(id, 'ERROR')
+            database.updateSessions(backupSessions, ERROR)
     else:
         print(f'{warn} No sessions to register')
 
@@ -94,16 +93,13 @@ def main():
     # doesn't conflict with the new ones.
     # This is because we don't have any way to determine which score belongs to which session if there is a many to many relation.
     try:
-        # database = Database()
-        # database.connect()
-        # # print(sessions)
-        # database.updateSessions(sessions, 'PROCESSED')
-        # database.close()
         registerSession(rows)
         resetScores(sessions)
     except Exception as err:
         print(f'{error} There was an error while reseting the scores')
         print(f'{error}', err)
+
+    database.close()
 
 if __name__ == "__main__":
     main()
