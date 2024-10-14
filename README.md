@@ -21,7 +21,7 @@ FLUSH PRIVILEGES;
 
 # Enable Mysql ports to be connected outside localhost
 
-sudo nano /etc/mysql/mariadb.conf.d/50-server-cnf
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # Change the bind-address line to 0.0.0.0. This will allow to receive external connections
 # Restart the service
