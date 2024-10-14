@@ -13,15 +13,15 @@ def main():
 
     # Process logs file
     rows: list[str] = openLogFile(LOGS_PATH)
-    print(f'{info} Procesando las horas...')
+    print(f'{info} Processing time...')
     sessionDates: list[str] = getSessionDate(rows)
-    print(f'{info} Sumando las horas de las sesiones....')
+    print(f'{info} Adding hours to the sessions....')
     sessionTime: str = getSessionTime(sessionDates)
     if(len(sessionDates)):
         writeLogFile(LOGS_PATH, sessionDates, sessionTime)
 
     rows: list[str] = openLogFile(LOGS_PATH)
-    print(f'{info} Procesando las sesiones...')
+    print(f'{info} Processing the sessions...')
 
     # Login into the API to get the Access token
     token = None
@@ -55,7 +55,8 @@ def main():
         # save sesssions in local database
         try:
             backupSessions = database.insertSessions(sessions)
-            # errorSessions = database.getErrorSessions()
+            errorSessions = database.getErrorSessions()
+            backupSessions = backupSessions + errorSessions
         except Exception as err:
             print('An error ocurred while inserting the Sessions into the database')
 

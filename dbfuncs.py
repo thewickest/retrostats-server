@@ -1,5 +1,6 @@
 import mysql.connector
 from variables import DATABASE_NAME, DATABASE_PASSWORD, DATABASE_USER, DATABASE_HOST
+from constants import info
 
 class Database(object):
     def _init_(self,connection,cursor):
@@ -7,7 +8,7 @@ class Database(object):
         self.cursor = cursor
         
     def connect(self):
-        print("Connecting with the backup database...")
+        print(f'{info} Connecting with the backup database...')
         try:
             self.connection = mysql.connector.connect(  host = DATABASE_HOST, 
                                                         database = DATABASE_NAME,
@@ -17,7 +18,7 @@ class Database(object):
         except Exception as e:
             print(e)
     def insertSessions(self,sessions):
-        print("Creating backup sessions...")
+        print(f'{info} Creating backup sessions...')
         backupSessions = []
         for session in sessions:
             query = """INSERT INTO sessions (initDate, duration, score, gameId, gameName, gameEmulator, gamePath, userId, state) 
@@ -38,7 +39,7 @@ class Database(object):
         return backupSessions
 
     def updateSessions(self, sessions, state):
-        print("Updating backup sessions...")
+        print(f'{info} Updating backup sessions...')
         for session in sessions:
             query = 'UPDATE sessions SET state = %s WHERE id = %s'
             self.cursor.execute(query, (state, session['id']))
@@ -48,7 +49,14 @@ class Database(object):
         self.cursor.execute(query)
         columns = [desc[0] for desc in self.cursor.description]
         rows = self.cursor.fetchall()
-        return [dict(zip(columns, row)) for row in rows]
+        sessions = []
+        for row in rows:
+            rowSession = dict(zip(columns, row))
+            id = rowSession.pop('id')
+            initDate = rowSession.pop('initDate')
+            rowSession['initDate'] = str(initDate)
+            sessions.append({'id': id, 'session': rowSession})
+        return sessions
 
     def takeid(self,valor):
         # TODO: this should be changed by a fetch to the api
