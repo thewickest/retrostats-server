@@ -1,32 +1,39 @@
 import filecmp 
 from shutil import copyfile
 from switcher import Switcher
-import os.path
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
 from constants import error
+from files import deleteFile
 
 c = "|"
 jump = '\n'
 
 # TODO find a way to change this
-partialScorePath =  "/mame2003/hi"
 
 def copyScoreFile(slug):
     currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
     previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
     copyfile(currentFileScore, previousFileScore)
 
+def resetScores(sessions):
+    for session in sessions:
+        slug = session['gameName']
+        emulator = session['gameEmulator']
+        gamePath = session['gamePath']
+        textScoreFile = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
+
+        scorePath = gamePath + '/' + emulator + '/hi'
+        if (ENV == 'local'):
+            scorePath = BYTE_SCORES_PATH
+        byteScoreFile = scorePath +'/'+ slug + ".hi"
+
+        deleteFile(textScoreFile)
+        deleteFile(byteScoreFile)
 
 def compareScoreFiles(nameGame):
-    # TODO the first time doesnt compare anything because there is no scoreTxt file
-    #se compara para saber si hay puntuaciones nuevas
     currentPath = (TEXT_SCORES_PATH+'/%s.txt' % (nameGame))
-    previousPath = (TEXT_SCORES_PATH+'/%sB.txt' % (nameGame))
+    previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
 
-    if(not os.path.isfile(previousPath)):
-        previousPath = (TEXT_SCORES_PATH+'/%s-base.txt' % (nameGame))
-
-    #si las hay, se extrae el conjunto de lineaas distintas.
     scores = [0]
     try:
         comp = filecmp.cmp(currentPath, previousPath, shallow = False)
@@ -34,7 +41,7 @@ def compareScoreFiles(nameGame):
             currentFile = open(currentPath,"r+")
             previousFile = open(previousPath,"r+")
             scores = getDifference(currentFile, previousFile)
-            print('scores', scores)
+            # print('scores', scores)
     except Exception as err:
         print(f'{error}', err)
     finally:
@@ -60,13 +67,13 @@ def processHiFiles(textScorePath, byteScoresPath,nameGame):
     sw = Switcher()
     sw.hiToText(textScorePath, byteScoresPath, nameGame)
 
-def getScores(gamePath, gameName):
+def getScores(gamePath, gameName, gameEmulator):
 
     gamePath = gamePath.split("/")
     gamePath.pop()
     gamePath = ("/").join(gamePath)
 
-    scorePath = gamePath + partialScorePath
+    scorePath = gamePath + '/' + gameEmulator + '/hi'
     if (ENV == 'local'):
         scorePath = BYTE_SCORES_PATH
 
@@ -75,8 +82,6 @@ def getScores(gamePath, gameName):
 
 
     # Converts the score files saved in bytes into text.
-    # TODO maybe after this, we could delete the HI file to always save a score even if it's too low
     processHiFiles(textScorePath, byteScorePath, gameName)
 
-    # Return the scores if there is score differences
     return compareScoreFiles(gameName)

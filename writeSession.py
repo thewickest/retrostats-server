@@ -1,7 +1,6 @@
 from datetime import datetime
 from readScores import getScores
-from pathlib import Path
-from constants import info, error
+from constants import error
 from api.api import getGameBySlug, login, getPlayerByNfc
 from variables import LOGS_PATH
 
@@ -47,21 +46,21 @@ def registerSession(rows):
 #         return sesiones
 #     else: print("La lista ya está procesada")
 
-def getUser(self):
-    user = "default"
-    lector = nfc()
-    db = datos()
-    if(lector.leerNfc() != None):
-        print(lector.id)
-        try:
-            db.connect()
-            user = db.takeid(lector.id)
-            db.close()
-        except:
-            print("No se puede conectar a la base de datos")
-    return user
+# def getUser(self):
+#     user = "default"
+#     lector = nfc()
+#     db = datos()
+#     if(lector.leerNfc() != None):
+#         print(lector.id)
+#         try:
+#             db.connect()
+#             user = db.takeid(lector.id)
+#             db.close()
+#         except:
+#             print("No se puede conectar a la base de datos")
+#     return user
 
-def getSession(rowSessions: list[str]):
+def getSession(rowSessions: list[str], token: str):
     objSessions: list[object] = []
     for session in rowSessions:
         names: list[str] = session.split(SEPARATOR)
@@ -69,6 +68,8 @@ def getSession(rowSessions: list[str]):
         gamePath: str = names[4]
         pathSections: str = gamePath.split(SLASH)
         gameFile = pathSections[len(pathSections)-1]
+        gameEmulator = names[3]
+        gameEmulator = gameEmulator[3:]
         gameName = gameFile.split(DOT)[0]
 
         if(state != 'P' and state != 'start' and state != 'end'):
@@ -78,8 +79,7 @@ def getSession(rowSessions: list[str]):
             initDate = dateTime.strftime('%Y-%m-%dT%H:%M:%S')
 
             # Score
-            # TODO get the max score maybe ? 
-            score = getScores(gamePath, gameName)
+            scores: list[str] = getScores(gamePath, gameName, gameEmulator)
 
             # Duration
             stringDuration = names[1]
@@ -87,12 +87,12 @@ def getSession(rowSessions: list[str]):
             duration = dateTimeDuration.total_seconds()
 
             # Game Id
-            gameId = None
+            gameId = 1 # default game
             try:
-                data = login()
-                token = data['access_token'] if data else None
-                strapiGame = getGameBySlug(gameName, token) if token else None
-                gameId = strapiGame['id'] if strapiGame else None
+                response = getGameBySlug(gameName, token) if token else None
+                response.raise_for_status()
+                strapiGame = response.json()
+                gameId = strapiGame['id'] if strapiGame else 1
             except Exception as err:
                 print(f'{error}',err)
 
@@ -102,25 +102,28 @@ def getSession(rowSessions: list[str]):
             # User Id
             # TODO read nfc and try to get auser if no use is found
             # we get a default user example: userId 1
-            gameUserId = None
+            gameUserId = 1 # default user
             try:
-                data = login()
-                token = data['access_token']
                 # TODO change this obviously
                 nfc = '1234'
-                strapiGameUser = getPlayerByNfc(nfc, token)
-                gameUserId = strapiGameUser['id']
+                # TODO if the user is not found, use a fake user
+                response = getPlayerByNfc(nfc, token)
+                response.raise_for_status()
+                strapiGameUser = response.json()
+                gameUserId = strapiGameUser['id'] if strapiGameUser else 1
             except Exception as err:
                 print(f'{error}',err)
-
-            newSession: object = {
-                'initDate': initDate,
-                'duration': int(duration),
-                'score': int(max(score)),
-                'gameId': gameId,
-                'gameName': gameName,
-                'userId': gameUserId,
-            }
-            objSessions.append(newSession)
-    # TODO we always return the first but we should do something with it
-    return objSessions[0] if len(objSessions) > 0 else None
+            
+            for score in scores:
+                newSession: object = {
+                    'initDate': initDate,
+                    'duration': int(duration),
+                    'score': int(score),
+                    'gameId': gameId,
+                    'gameName': gameName,
+                    'gameEmulator': gameEmulator,
+                    'gamePath': gamePath,
+                    'userId': gameUserId,
+                }
+                objSessions.append(newSession)
+    return objSessions if len(objSessions) > 0 else []

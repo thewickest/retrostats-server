@@ -1,4 +1,5 @@
 SEPARATOR = "|"
+import os
 
 # Read the log file
 def openLogFile(logPath: str) -> list[str]:
@@ -35,3 +36,13 @@ def writeLogFile(logPath: str, sessionDate: list[str], sessionTime: str):
     logFile = open(logPath, 'w+')
     logFile.writelines(newLines)
     logFile.close()
+
+def deleteFile(path: str):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        print(f"File '{path}' not found.")
+    except PermissionError:
+        print(f"Permission denied: Unable to delete '{path}'.")
+    except Exception as e:
+        print(f"An error occurred while deleting '{path}': {e}")
