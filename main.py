@@ -48,7 +48,8 @@ def main():
         database = Database()
         database.connect()
     except: 
-        print('Cant connect to local database')
+        print(f'{error} Cant connect to local database')
+        database = None
     
     backupSessions = []
     if(database):
@@ -100,7 +101,8 @@ def main():
         print(f'{error} There was an error while reseting the scores')
         print(f'{error}', err)
 
-    database.close()
+    if(database):
+        database.close()
 
 if __name__ == "__main__":
     main()
