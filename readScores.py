@@ -48,6 +48,7 @@ def compareScoreFiles(nameGame):
         return scores
 
 def getDifference(file1,file2):
+    # TODO change this. Maybe use a json format
     lines = []
     f1 = file1.readlines()
     f2 = file2.readlines()
