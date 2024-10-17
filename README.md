@@ -27,6 +27,6 @@ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
 # Restart the service
 sudo service mysql restart
 
-CREATE TABLE sessions (id INT AUTO_INCREMENT, initDate DATE, duration INT, score INT, gameId INT, gameName VARCHAR(255), gameEmulator VARCHAR(255), gamePath VARCHAR(255), userId INT, state VARCHAR(255), PRIMARY KEY(id));
+CREATE TABLE test.sessions (id INT AUTO_INCREMENT, initDate DATE, duration INT, score INT, gameId INT, gameName VARCHAR(255), gameEmulator VARCHAR(255), gamePath VARCHAR(255), userId INT, state VARCHAR(255), PRIMARY KEY(id));
 
 # This is and insecure practice meant just for development processes. Instead of 0.0.0.0 you should be allowing the host's IP address
