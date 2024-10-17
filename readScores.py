@@ -48,6 +48,7 @@ def compareScoreFiles(nameGame):
         return scores
 
 def getDifference(file1,file2):
+    # TODO change this. Maybe use a json format
     lines = []
     f1 = file1.readlines()
     f2 = file2.readlines()
@@ -82,6 +83,8 @@ def getScores(gamePath, gameName, gameEmulator):
 
 
     # Converts the score files saved in bytes into text.
+    # TODO what if instead of saving a random file, we save it with json format?
+    # TODO we can even change the databse to no-sql database
     processHiFiles(textScorePath, byteScorePath, gameName)
 
     return compareScoreFiles(gameName)

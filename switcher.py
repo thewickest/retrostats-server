@@ -1,9 +1,4 @@
-from pathlib import Path
-from constants import error
-
-c = "|"
-jump = "\n"
-home = str(Path.home())
+from constants import error, NEWLINE, SEPARATOR
 
 class Switcher(object):
     def hiToText(self, textScorePath, byteScorePath, gameName):
@@ -35,8 +30,8 @@ class Switcher(object):
                     if byte == '':  byte = "10"
                     scores.append(byte)
 
-                    line = c.join(scores)
-                    fw.write(line+jump)
+                    line = SEPARATOR.join(scores)
+                    fw.write(line+NEWLINE)
 
                     byte = f.read(1)
             fw.close()
@@ -94,9 +89,6 @@ class Switcher(object):
                     byte = f.read(1)
                     nothing = byte.hex()
 
-                    # print(position)
-                    # scores.append(position)
-
                     byte = f.read(3)
                     score = byte.hex()
                     scores.append(score)
@@ -106,8 +98,6 @@ class Switcher(object):
                     scores.append(name)
 
                     byte = f.read(1)
-                    # nothing = byte.hex()
-                    # scores.append(nothing)
 
                     byte = f.read(1)
                     state = byte.hex()
@@ -117,10 +107,41 @@ class Switcher(object):
                     other = byte.hex()
                     scores.append(other)
 
-                    # byte = f.read(3)
+                    line = SEPARATOR.join(scores)
+                    fw.write(line+NEWLINE)
+            fw.close()
+        except Exception as err:
+            print(f'{error}', err)
 
-                    line = c.join(scores)
-                    fw.write(line+jump)
+    def hiToText_xmen(self, textScorePath, byteScorePath):
+        try:
+            fw = open(textScorePath,"w+")
+            with open(byteScorePath,"rb") as f:
+                byte = "empty"
+                characters = ['CYCLOPS', 'COLOSSUS', 'WOLVERINE', 'STORM', 'NIGHT CRAWLER', 'DAZZLER', '']
+                count = 0
+                character = characters[0]
+                while byte:
+                    scores = []
+                    byte = f.read(1) # stage
+                    stage = str(byte.hex())
+
+                    byte = f.read(3)
+                    name = ''.join(chr(b + ord('A')) for b in byte)
+
+                    byte = f.read(2) # scores
+                    score = str(byte.hex())
+                    if count % 10 == 0:
+                        character = characters[int(count/10)]
+                    scores.append(score)
+                    scores.append(name)
+                    scores.append(stage)
+                    scores.append(character)
+
+                    line = SEPARATOR.join(scores)
+                    fw.write(line+NEWLINE)
+
+                    count += 1
             fw.close()
         except Exception as err:
             print(f'{error}', err)
