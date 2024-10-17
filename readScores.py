@@ -82,6 +82,8 @@ def getScores(gamePath, gameName, gameEmulator):
 
 
     # Converts the score files saved in bytes into text.
+    # TODO what if instead of saving a random file, we save it with json format?
+    # TODO we can even change the databse to no-sql database
     processHiFiles(textScorePath, byteScorePath, gameName)
 
     return compareScoreFiles(gameName)
