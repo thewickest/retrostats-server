@@ -18,7 +18,7 @@ You can contribute in two ways:
 ```
 \project_folder
     \roms
-        \mame-libretro
+        \mameLibretro
             \mame2003
                 ...
                 pang.py
