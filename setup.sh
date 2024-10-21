@@ -4,6 +4,8 @@ apt upgrade
 
 apt install mariadb-server
 
+# mysql_secure_installation 
+
 green() {
   echo -e '\e[32m'$1'\e[m';
 }
@@ -37,3 +39,9 @@ green "Database $1 and user $2 created with a password you chose"
 green "Restarting Mysql Service"
 
 service mysql restart
+
+# Enable Mysql ports to be connected outside localhost
+
+# sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+# Change the bind-address line to 0.0.0.0. This will allow to receive external connections
+# This is and insecure practice meant just for development processes. Instead of 0.0.0.0 you should be allowing the host's IP address -->
