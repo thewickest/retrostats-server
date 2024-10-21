@@ -2,18 +2,14 @@ import filecmp
 from shutil import copyfile
 from switcher import Switcher
 from variables import TEXT_SCORES_PATH, BYTE_SCORES_PATH, ENV
+from constants import SEPARATOR, SLASH
 from constants import error
 from files import deleteFile
 
-c = "|"
-jump = '\n'
-
-# TODO find a way to change this
-
-def copyScoreFile(slug):
-    currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
-    previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
-    copyfile(currentFileScore, previousFileScore)
+# def copyScoreFile(slug):
+#     currentFileScore = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
+#     previousFileScore = (TEXT_SCORES_PATH+'/%sB.txt' % (slug))
+#     copyfile(currentFileScore, previousFileScore)
 
 def resetScores(sessions):
     for session in sessions:
@@ -22,10 +18,14 @@ def resetScores(sessions):
         gamePath = session['gamePath']
         textScoreFile = (TEXT_SCORES_PATH+'/%s.txt' % (slug))
 
-        scorePath = gamePath + '/' + emulator + '/hi'
+        gamePath = gamePath.split(SLASH)
+        gamePath.pop()
+        gamePath = (SLASH).join(gamePath)
+        
+        scorePath = gamePath + SLASH + emulator + '/hi'
         if (ENV == 'local'):
             scorePath = BYTE_SCORES_PATH
-        byteScoreFile = scorePath +'/'+ slug + ".hi"
+        byteScoreFile = scorePath + SLASH + slug + ".hi"
 
         deleteFile(textScoreFile)
         deleteFile(byteScoreFile)
@@ -48,14 +48,15 @@ def compareScoreFiles(nameGame):
         return scores
 
 def getDifference(file1,file2):
+    # TODO change this. Maybe use a json format
     lines = []
     f1 = file1.readlines()
     f2 = file2.readlines()
     for f in f1:
         flag = True
-        lf = f.split(c)
+        lf = f.split(SEPARATOR)
         for h in f2:
-            lh = h.split(c)
+            lh = h.split(SEPARATOR)
             if (lf[0] == lh[0] and lf[1] == lh[1] and lf[2] == lh[2]):
                 flag = False
                 break
@@ -69,19 +70,21 @@ def processHiFiles(textScorePath, byteScoresPath,nameGame):
 
 def getScores(gamePath, gameName, gameEmulator):
 
-    gamePath = gamePath.split("/")
+    gamePath = gamePath.split(SLASH)
     gamePath.pop()
-    gamePath = ("/").join(gamePath)
+    gamePath = (SLASH).join(gamePath)
 
-    scorePath = gamePath + '/' + gameEmulator + '/hi'
+    scorePath = gamePath + SLASH + gameEmulator + '/hi'
     if (ENV == 'local'):
         scorePath = BYTE_SCORES_PATH
 
-    byteScorePath = scorePath +'/'+ gameName + ".hi"
-    textScorePath = TEXT_SCORES_PATH +'/'+ gameName + '.txt'
+    byteScorePath = scorePath + SLASH + gameName + ".hi"
+    textScorePath = TEXT_SCORES_PATH + SLASH + gameName + '.txt'
 
 
     # Converts the score files saved in bytes into text.
+    # TODO what if instead of saving a random file, we save it with json format?
+    # TODO we can even change the databse to no-sql database
     processHiFiles(textScorePath, byteScorePath, gameName)
 
     return compareScoreFiles(gameName)
