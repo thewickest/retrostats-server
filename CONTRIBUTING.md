@@ -8,24 +8,11 @@ You can contribute in two ways:
 1. Create a new Python file, typically named after the game you want to include (`pang.py` for Pang, `pacman.py` for Pacman, etc.).
 2. Inside it, define a function with the following description:
 ```
-    # 
-    # It receives a file with binary content and returns an array with each line being a different score + additional content.
-    # Currently, only the first section of the line (the score) will be considered, but we return everything for later usage.
-    #
-    def pangParser(binaryFile: File) -> str[]:
+    def parser(textScorePath, byteScorePath)-> None:
         ....
-        return [
-            234583|BOB|20|01,
-            80000|M.K|18|02,
-            70000|T.U|17|03,
-            60000|K.H|15|04,
-            50000|Y.N|13|05,
-            40000|Y.K|12|06,
-            30000|Y.F|11|07,
-            20000|M.N|10|08,
-            10000|M.M|05|09,
-            5000|J.O|03|10,
-        ]
+        # write the sessions in .txt format into textScorePath
+        # See pang.py for an example
+
 ```
 3. Place the file in the corresponding project folder.
 ```
@@ -38,12 +25,15 @@ You can contribute in two ways:
                 ...
 
 ```
-4. Add your function inside the `switcher.py` file:
+4. Add your function inside the `mame2003/__init__.py` file:
 ```
 ...
-from mame2003 import pacmanParser, pangParser
+import roms.mameLibretro.mame2003.pang as pang
 
-class Switcher(object):
-    def hiToText(self, textScorePath, byteScorePath, gameName):
-        ...
+...
+def pangParser(textScorePath, byteScorePath):
+    pang.parser(textScorePath, byteScorePath)
+...
 ```
+
+Note: We are working in a more dynamic way for including new games. Suggestions are welcome.
